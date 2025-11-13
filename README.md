@@ -4,6 +4,8 @@ AI-avusteinen ostolaskujen automaattinen kohdistus projekteihin.
 
 ## Tarkoitus
 
+Repositoryn tarkoitus on tuoda lähdekoodi asiakkaalle tarkistettavaksi, mutta ohjelmasta puuttuu olennaisia integraatioita, jotka estävät ohjelman käytön tuotannossa.
+
 InvoiceRobot automatisoi ostolaskujen käsittelyn taloushallintojärjestelmissä (Netvisor/Procountor):
 
 1. **Hakee ostolaskut** automaattisesti taloushallinnosta
@@ -46,16 +48,16 @@ Järjestelmä vähentää manuaalista työtä ja parantaa laskujen kohdistuksen 
 │                    Azure Functions                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  ┌──────────────┐   ┌──────────────┐   ┌───────────────┐  │
-│  │ Invoice      │   │ Invoice      │   │ Approval      │  │
-│  │ Fetcher      │──▶│ Analyzer     │──▶│ Handler       │  │
-│  │ (Timer)      │   │ (Queue)      │   │ (HTTP)        │  │
-│  └──────────────┘   └──────────────┘   └───────────────┘  │
-│        │                   │                    │          │
-│        ▼                   ▼                    ▼          │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │          Azure SQL Database                          │  │
-│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────┐   ┌──────────────┐   ┌───────────────┐    │
+│  │ Invoice      │   │ Invoice      │   │ Approval      │    │  
+│  │ Fetcher      │─▶ │ Analyzer     │─▶│ Handler       │    │
+│  │ (Timer)      │   │ (Queue)      │   │ (HTTP)        │    │
+│  └──────────────┘   └──────────────┘   └───────────────┘    │
+│        │                   │                    │           │
+│        ▼                   ▼                    ▼           │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │          Azure SQL Database                          │   │
+│  └──────────────────────────────────────────────────────┘   │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
          │                  │                    │
@@ -347,24 +349,7 @@ dotnet test --filter Category=Unit
 dotnet test --filter Category=Integration
 ```
 
-### TDD-periaate
 
-Projekti noudattaa **Test-Driven Development** -periaatetta:
-1. Kirjoita testi ensin
-2. Toteuta ominaisuus
-3. Varmista että testit menevät läpi
-4. Refaktoroi
-
----
-
-## Tuki ja dokumentaatio
-
-- **Projektisuunnitelma**: `docs/projectplan_final.md`
-- **Prosessikaavio**: `docs/process-flowchart.md`
-- **Käyttöohje**: `docs/usage-guide.md`
-- **Troubleshooting**: `docs/troubleshooting.md`
-
----
 
 ## Lisenssi
 
@@ -375,9 +360,8 @@ Proprietary - Kaikki oikeudet pidätetään.
 ## Yhteystiedot
 
 **Projekti**: InvoiceRobot
-**Asiakas**: Mitta Oy
-**Kehittäjä**: [Nimi]
-**Sähköposti**: [email@example.com]
+**Kehittäjä**: Winter IT Oy / Antti Winter
+**Sähköposti**: [antti@winterit.fi]
 
 ---
 
