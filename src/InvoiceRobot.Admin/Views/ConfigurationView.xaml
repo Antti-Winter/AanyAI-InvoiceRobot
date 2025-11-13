@@ -1,0 +1,205 @@
+<UserControl x:Class="InvoiceRobot.Admin.Views.ConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:vm="clr-namespace:InvoiceRobot.Admin.ViewModels">
+    <UserControl.DataContext>
+        <vm:ConfigurationViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Otsikko -->
+        <TextBlock Grid.Row="0"
+                   Text="Konfiguraatio"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20" />
+
+        <!-- TabControl eri asetuksille -->
+        <TabControl Grid.Row="1"
+                    Style="{StaticResource MaterialDesignTabControl}">
+
+            <!-- Tab 1: Taloushallinto -->
+            <TabItem Header="Taloushallinto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Taloushallintojärjestelmä"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10" />
+
+                        <TextBox Text="{Binding Settings.AccountingProvider}"
+                                 materialDesign:HintAssist.Hint="Provider (Netvisor/Procountor)"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBlock Text="Netvisor-asetukset"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Margin="0,10,0,5" />
+
+                        <TextBox Text="{Binding Settings.NetvisorCustomerId}"
+                                 materialDesign:HintAssist.Hint="Netvisor Customer ID"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Text="{Binding Settings.NetvisorPartnerId}"
+                                 materialDesign:HintAssist.Hint="Netvisor Partner ID"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <PasswordBox materialDesign:HintAssist.Hint="Netvisor Partner Key"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding Settings.NetvisorPartnerKey, Mode=TwoWay}"
+                                     Margin="0,0,0,15"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
+
+                        <TextBox Text="{Binding Settings.NetvisorOrganizationId}"
+                                 materialDesign:HintAssist.Hint="Netvisor Organization ID"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBlock Text="Procountor-asetukset"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Margin="0,10,0,5" />
+
+                        <PasswordBox materialDesign:HintAssist.Hint="Procountor API Key"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding Settings.ProcountorApiKey, Mode=TwoWay}"
+                                     Margin="0,0,0,15"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
+
+                        <TextBox Text="{Binding Settings.ProcountorCompanyId}"
+                                 materialDesign:HintAssist.Hint="Procountor Company ID"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Text="{Binding Settings.ProcountorEnvironment}"
+                                 materialDesign:HintAssist.Hint="Procountor Environment (esim. prod)"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Tab 2: Azure OpenAI -->
+            <TabItem Header="Azure OpenAI">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Azure OpenAI -asetukset"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10" />
+
+                        <TextBox Text="{Binding Settings.AzureOpenAIEndpoint}"
+                                 materialDesign:HintAssist.Hint="Endpoint URL"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <PasswordBox materialDesign:HintAssist.Hint="API Key"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding Settings.AzureOpenAIApiKey, Mode=TwoWay}"
+                                     Margin="0,0,0,15"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
+
+                        <TextBox Text="{Binding Settings.AzureOpenAIDeploymentName}"
+                                 materialDesign:HintAssist.Hint="Deployment Name (esim. gpt-4)"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBlock Text="GPT Matcher -prompti"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Margin="0,10,0,5" />
+
+                        <TextBox Text="{Binding Settings.GptMatcherPrompt}"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 MinHeight="200"
+                                 Margin="0,0,0,15"
+                                 FontFamily="Consolas"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBlock Text="Heuristic Matcher -prompti"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Margin="0,10,0,5" />
+
+                        <TextBox Text="{Binding Settings.HeuristicMatcherPrompt}"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 MinHeight="200"
+                                 Margin="0,0,0,15"
+                                 FontFamily="Consolas"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Tab 3: Document Intelligence -->
+            <TabItem Header="Document Intelligence">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Azure Document Intelligence (OCR)"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,10" />
+
+                        <TextBox Text="{Binding Settings.DocumentIntelligenceEndpoint}"
+                                 materialDesign:HintAssist.Hint="Endpoint URL"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <PasswordBox materialDesign:HintAssist.Hint="API Key"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding Settings.DocumentIntelligenceApiKey, Mode=TwoWay}"
+                                     Margin="0,0,0,15"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}" />
+
+                        <TextBlock Text="Email-asetukset"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Margin="0,20,0,10" />
+
+                        <TextBox Text="{Binding Settings.CommunicationServicesConnectionString}"
+                                 materialDesign:HintAssist.Hint="Azure Communication Services Connection String"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Text="{Binding Settings.EmailSenderAddress}"
+                                 materialDesign:HintAssist.Hint="Lähettäjän sähköpostiosoite"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+                        <TextBox Text="{Binding Settings.EmailPmDistributionList}"
+                                 materialDesign:HintAssist.Hint="PM:ien sähköpostit (pilkulla eroteltuna)"
+                                 Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Tallenna-nappi -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+            <Button Content="Lataa asetukset"
+                    Command="{Binding LoadSettingsCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,10,0"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}" />
+
+            <Button Content="Tallenna"
+                    Command="{Binding SaveSettingsCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

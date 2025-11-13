@@ -1,0 +1,174 @@
+<UserControl x:Class="InvoiceRobot.Admin.Views.LogsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:vm="clr-namespace:InvoiceRobot.Admin.ViewModels">
+    <UserControl.DataContext>
+        <vm:LogsViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Otsikko -->
+        <TextBlock Grid.Row="0"
+                   Text="Lokit"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20" />
+
+        <!-- Suodattimet ja päivitä-nappi -->
+        <Grid Grid.Row="1"
+              Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Aikaväli-valinta -->
+            <ComboBox Grid.Column="0"
+                      SelectedItem="{Binding SelectedTimeRange}"
+                      materialDesign:HintAssist.Hint="Aikaväli"
+                      Margin="0,0,10,0"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBoxItem Content="Viimeiset 1h" Tag="1" />
+                <ComboBoxItem Content="Viimeiset 6h" Tag="6" />
+                <ComboBoxItem Content="Viimeiset 24h" Tag="24" IsSelected="True" />
+                <ComboBoxItem Content="Viimeiset 7 päivää" Tag="168" />
+                <ComboBoxItem Content="Viimeiset 30 päivää" Tag="720" />
+            </ComboBox>
+
+            <!-- Log-level-valinta -->
+            <ComboBox Grid.Column="1"
+                      SelectedItem="{Binding SelectedLogLevel}"
+                      materialDesign:HintAssist.Hint="Log-taso"
+                      Margin="0,0,10,0"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBoxItem Content="Kaikki" Tag="All" IsSelected="True" />
+                <ComboBoxItem Content="Error" Tag="Error" />
+                <ComboBoxItem Content="Warning" Tag="Warning" />
+                <ComboBoxItem Content="Information" Tag="Information" />
+                <ComboBoxItem Content="Debug" Tag="Debug" />
+            </ComboBox>
+
+            <!-- Tyhjä tila -->
+            <Border Grid.Column="2" />
+
+            <!-- Virheiden pikahaku -->
+            <Button Grid.Column="3"
+                    Content="Näytä vain virheet"
+                    Command="{Binding LoadRecentErrorsCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,10,0"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}" />
+
+            <!-- Päivitä-nappi -->
+            <Button Grid.Column="4"
+                    Content="Päivitä"
+                    Command="{Binding LoadLogsCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}" />
+        </Grid>
+
+        <!-- DataGrid lokeille -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Logs}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  SelectionMode="Single"
+                  Style="{StaticResource MaterialDesignDataGrid}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Aika"
+                                    Binding="{Binding Timestamp, StringFormat=g}"
+                                    Width="150" />
+                <DataGridTextColumn Header="Taso"
+                                    Binding="{Binding Level}"
+                                    Width="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="Error">
+                                    <Setter Property="Foreground" Value="Red" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+                                <Trigger Property="Text" Value="Warning">
+                                    <Setter Property="Foreground" Value="Orange" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Trigger>
+                                <Trigger Property="Text" Value="Information">
+                                    <Setter Property="Foreground" Value="Blue" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Funktio"
+                                    Binding="{Binding FunctionName}"
+                                    Width="200" />
+                <DataGridTextColumn Header="Viesti"
+                                    Binding="{Binding Message}"
+                                    Width="*" />
+            </DataGrid.Columns>
+
+            <!-- Row Details - Näyttää koko viestin ja stack tracen -->
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="{DynamicResource MaterialDesignDivider}"
+                            BorderThickness="1"
+                            Padding="10"
+                            Margin="10">
+                        <StackPanel>
+                            <TextBlock Text="Täydellinen viesti:"
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,5" />
+                            <TextBox Text="{Binding Message, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap"
+                                     FontFamily="Consolas"
+                                     FontSize="11"
+                                     Background="{DynamicResource MaterialDesignCardBackground}"
+                                     Margin="0,0,0,10" />
+
+                            <TextBlock Text="Stack Trace:"
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,5"
+                                       Visibility="{Binding StackTrace, Converter={StaticResource NullToVisConverter}}" />
+                            <TextBox Text="{Binding StackTrace, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap"
+                                     FontFamily="Consolas"
+                                     FontSize="10"
+                                     Background="{DynamicResource MaterialDesignCardBackground}"
+                                     MaxHeight="200"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Visibility="{Binding StackTrace, Converter={StaticResource NullToVisConverter}}" />
+
+                            <TextBlock Text="Lisätiedot:"
+                                       FontWeight="Bold"
+                                       Margin="0,10,0,5"
+                                       Visibility="{Binding Properties, Converter={StaticResource NullToVisConverter}}" />
+                            <TextBox Text="{Binding Properties, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap"
+                                     FontFamily="Consolas"
+                                     FontSize="10"
+                                     Background="{DynamicResource MaterialDesignCardBackground}"
+                                     MaxHeight="150"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Visibility="{Binding Properties, Converter={StaticResource NullToVisConverter}}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+    </Grid>
+</UserControl>

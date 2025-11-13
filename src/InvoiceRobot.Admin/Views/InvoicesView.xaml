@@ -1,0 +1,189 @@
+<UserControl x:Class="InvoiceRobot.Admin.Views.InvoicesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:vm="clr-namespace:InvoiceRobot.Admin.ViewModels">
+    <UserControl.DataContext>
+        <vm:InvoicesViewModel />
+    </UserControl.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Otsikko -->
+        <TextBlock Grid.Row="0"
+                   Text="Laskut"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20" />
+
+        <!-- Suodattimet ja hakukenttä -->
+        <Grid Grid.Row="1"
+              Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Hakukenttä -->
+            <TextBox Grid.Column="0"
+                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="Hae laskuja (numero, toimittaja...)"
+                     Margin="0,0,10,0"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}" />
+
+            <!-- Status-suodatin -->
+            <ComboBox Grid.Column="1"
+                      SelectedItem="{Binding SelectedStatus}"
+                      materialDesign:HintAssist.Hint="Status"
+                      Margin="0,0,10,0"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBoxItem Content="Kaikki" />
+                <ComboBoxItem Content="Pending" />
+                <ComboBoxItem Content="Analyzing" />
+                <ComboBoxItem Content="Matched" />
+                <ComboBoxItem Content="NeedsApproval" />
+                <ComboBoxItem Content="Approved" />
+                <ComboBoxItem Content="Failed" />
+            </ComboBox>
+
+            <!-- Päivämäärä-suodatin -->
+            <DatePicker Grid.Column="2"
+                        SelectedDate="{Binding FilterDate}"
+                        materialDesign:HintAssist.Hint="Päivämäärä"
+                        Margin="0,0,10,0"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" />
+
+            <!-- Hae-nappi -->
+            <Button Grid.Column="3"
+                    Content="Hae"
+                    Command="{Binding LoadInvoicesCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}" />
+        </Grid>
+
+        <!-- DataGrid laskuille -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Invoices}"
+                  SelectedItem="{Binding SelectedInvoice}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  SelectionMode="Single"
+                  Style="{StaticResource MaterialDesignDataGrid}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Numero"
+                                    Binding="{Binding InvoiceNumber}"
+                                    Width="120" />
+                <DataGridTextColumn Header="Toimittaja"
+                                    Binding="{Binding VendorName}"
+                                    Width="200" />
+                <DataGridTextColumn Header="Summa"
+                                    Binding="{Binding Amount, StringFormat=C}"
+                                    Width="100" />
+                <DataGridTextColumn Header="Päivämäärä"
+                                    Binding="{Binding InvoiceDate, StringFormat=d}"
+                                    Width="100" />
+                <DataGridTextColumn Header="Status"
+                                    Binding="{Binding Status}"
+                                    Width="120" />
+                <DataGridTextColumn Header="Projekti"
+                                    Binding="{Binding ProjectCode}"
+                                    Width="150" />
+                <DataGridTextColumn Header="Varmuus"
+                                    Binding="{Binding AiConfidenceScore, StringFormat=P0}"
+                                    Width="80" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Paginointi -->
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,15,0,15">
+            <Button Content="← Edellinen"
+                    Command="{Binding PreviousPageCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0,0,10,0"
+                    IsEnabled="{Binding CanGoPrevious}" />
+
+            <TextBlock Text="{Binding PageInfo}"
+                       VerticalAlignment="Center"
+                       Margin="10,0" />
+
+            <Button Content="Seuraava →"
+                    Command="{Binding NextPageCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="10,0,0,0"
+                    IsEnabled="{Binding CanGoNext}" />
+        </StackPanel>
+
+        <!-- DetailView valitulle laskulle -->
+        <Border Grid.Row="4"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="1"
+                Padding="15"
+                Margin="0,10,0,0"
+                Visibility="{Binding SelectedInvoice, Converter={StaticResource NullToVisConverter}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Vasemman puolen tiedot -->
+                <StackPanel Grid.Column="0"
+                            Margin="0,0,10,0">
+                    <TextBlock Text="Laskun tiedot"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,10" />
+
+                    <TextBlock Text="{Binding SelectedInvoice.InvoiceNumber, StringFormat='Numero: {0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.VendorName, StringFormat='Toimittaja: {0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.Amount, StringFormat='Summa: {0:C}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.InvoiceDate, StringFormat='Päivämäärä: {0:d}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.DueDate, StringFormat='Eräpäivä: {0:d}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.NetvisorInvoiceKey, StringFormat='Netvisor Key: {0}'}"
+                               Margin="0,3" />
+                </StackPanel>
+
+                <!-- Oikean puolen tiedot -->
+                <StackPanel Grid.Column="1"
+                            Margin="10,0,0,0">
+                    <TextBlock Text="Kohdistustiedot"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0,0,0,10" />
+
+                    <TextBlock Text="{Binding SelectedInvoice.Status, StringFormat='Status: {0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.ProjectCode, StringFormat='Projektikoodi: {0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.ProjectName, StringFormat='Projektinnimi: {0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.AiConfidenceScore, StringFormat='AI Varmuus: {0:P0}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.CreatedAt, StringFormat='Luotu: {0:g}'}"
+                               Margin="0,3" />
+                    <TextBlock Text="{Binding SelectedInvoice.UpdatedAt, StringFormat='Päivitetty: {0:g}'}"
+                               Margin="0,3" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
